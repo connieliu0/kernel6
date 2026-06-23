@@ -4,6 +4,8 @@ import {
   TITLE_DESIGN_WIDTH,
   type TitleLetter,
 } from "../data/consumptionTitleLayout";
+import { TITLE_LETTER_STAGGER_S } from "../data/introTiming";
+import { useAssetArticle } from "../context/AssetArticleContext";
 
 function pctX(value: number) {
   return `${(value / TITLE_DESIGN_WIDTH) * 100}%`;
@@ -26,6 +28,7 @@ function TitleLetter({ letter, index }: { letter: TitleLetter; index: number }) 
           width: pctX(letter.wrapperWidth),
           height: pctY(letter.wrapperHeight),
           "--start-rotation": `${startRotation}deg`,
+          animationDelay: `${index * TITLE_LETTER_STAGGER_S}s`,
         } as React.CSSProperties}
       >
         <span
@@ -45,6 +48,7 @@ function TitleLetter({ letter, index }: { letter: TitleLetter; index: number }) 
         left: pctX(letter.x),
         top: pctY(letter.y),
         "--start-rotation": `${startRotation}deg`,
+        animationDelay: `${index * TITLE_LETTER_STAGGER_S}s`,
       } as React.CSSProperties}
     >
       {letter.char}
@@ -52,14 +56,17 @@ function TitleLetter({ letter, index }: { letter: TitleLetter; index: number }) 
   );
 }
 
-const TITLE_LINE_SCALE = 0.88;
-
 export function ConsumptionTitle() {
+  const { hoverFocus } = useAssetArticle();
+  const isDefocused = hoverFocus !== null;
+
   return (
     <h1
-      className="consumption-title pointer-events-none relative z-20"
+      className={`consumption-title pointer-events-none relative z-20 transition-[opacity,filter] duration-300 ease-out ${
+        isDefocused ? "opacity-50 blur-[3px]" : "opacity-100 blur-0"
+      }`}
       style={{
-        aspectRatio: `${TITLE_DESIGN_WIDTH} / ${TITLE_DESIGN_HEIGHT * TITLE_LINE_SCALE}`,
+        aspectRatio: `${TITLE_DESIGN_WIDTH} / ${TITLE_DESIGN_HEIGHT}`,
       }}
       aria-label="The Feed"
     >

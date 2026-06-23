@@ -1,76 +1,86 @@
+import { PHONE_FADE_DURATION_S, PHONE_FADE_START_S } from "../data/introTiming";
+import { AssetArticleProvider } from "../context/AssetArticleContext";
 import { AssetImage } from "./AssetImage";
 import { ConsumptionBodyText } from "./ConsumptionBodyText";
 import { ConsumptionSubtitle } from "./ConsumptionSubtitle";
 import { ConsumptionTitle } from "./ConsumptionTitle";
+import { GroupArticleTooltip } from "./GroupArticleTooltip.tsx";
 
-const assets = [
+const PHONE_ANCHOR = { left: 5, top: 45 };
+
+function parseAssetPosition(className: string) {
+  const left = Number(className.match(/left-\[(\d+)%\]/)?.[1] ?? 50);
+  const top = Number(className.match(/top-\[(\d+)%\]/)?.[1] ?? 50);
+  return { left, top };
+}
+
+/** Shorter burst travel for assets farther from the phone. */
+function burstOffsetForPosition(left: number, top: number) {
+  const distance = Math.hypot(left - PHONE_ANCHOR.left, top - PHONE_ANCHOR.top);
+  const t = Math.min(1, distance / 55);
+  return {
+    x: `${-(30 - t * 18)}vw`,
+    y: `${20 - t * 12}vh`,
+  };
+}
+
+const assets: { src: string; className: string; articleId: string }[] = [
   {
     src: "/assets/corn3.png",
-    title: "Corn 3",
-    description: "Another ear of corn positioned horizontally along the bottom.",
     className: "top-[0%] left-[44%] w-[16vw] min-w-[160px] z-[1] rotate-[7deg]",
+    articleId: "corn",
   },
   {
-    src: "/assets/Golf 2.png",
-    title: "Cane",
-    description: "A walking cane with a rounded handle, tilted diagonally.",
-    className: "top-[20%] left-[47%] w-[40vw] min-w-[400px] z-[2] rotate-[7deg]",
+    src: "/assets/Golf.png",
+    className: "top-[15%] left-[47%] w-[20vw] min-w-[100px] z-[8] rotate-[60deg]",
+    articleId: "retreat",
   },
   {
     src: "/assets/Cat 1.png",
-    title: "Cat",
-    description: "A small animal figure sitting upright near the bottom.",
     className: "top-[52%] left-[56%] w-[14vw] min-w-[140px] z-[2] rotate-[-5deg]",
+    articleId: "retreat",
   },
   {
     src: "/assets/wrench 1.png",
-    title: "Forest",
-    description: "A low-poly forest base with stylized trees and a spire.",
     className: "top-[49%] left-[25%] w-[15vw] min-w-[150px] z-[3] rotate-[-5deg]",
+    articleId: "sandwich",
   },
   {
     src: "/assets/hammer 1.png",
-    title: "Hands",
-    description: "Two hands gripping a wooden mallet, angled downward.",
     className: "top-[40%] left-[18%] w-[16vw] min-w-[160px] z-[5] rotate-[10deg]",
+    articleId: "sandwich",
   },
   {
     src: "/assets/food1.png",
-    title: "Sundae",
-    description: "A tall glass dessert stacked with scoops and a cherry on top.",
     className: "top-[15%] left-[28%] w-[16vw] min-w-[160px] z-[6] rotate-[-8deg]",
+    articleId: "phone",
   },
   {
     src: "/assets/smucker 2.png",
-    title: "Cauliflower",
-    description: "A rounded vegetable head tucked behind the corn.",
     className: "top-[17%] left-[65%] w-[10vw] min-w-[100px] z-[7] rotate-[5deg]",
+    articleId: "sandwich",
   },
   {
     src: "/assets/corn1.png",
-    title: "Corn 1",
-    description: "An upright ear of corn with husks peeled back.",
     className: "top-[38%] left-[40%] w-[20vw] min-w-[200px] z-[8] rotate-[-12deg]",
+    articleId: "corn",
   },
   {
     src: "/assets/corn2.png",
-    title: "Corn 2",
-    description: "An ear of corn laid flat across the middle of the scene.",
     className: "top-[35%] left-[70%] w-[22vw] min-w-[220px] z-[10] rotate-[25deg]",
+    articleId: "corn",
   },
   {
     src: "/assets/smucker 1.png",
-    title: "Sphere",
-    description: "A simple gray ball resting near the cane handle.",
     className: "top-[20%] left-[58%] w-[10vw] min-w-[100px] z-[11] rotate-[0deg]",
+    articleId: "sandwich",
   },
   {
     src: "/assets/shrimp 1.png",
-    title: "Shrimp",
-    description: "A large shrimp rendered in grayscale, floating horizontally.",
     className: "top-[0%] left-[67%] w-[25vw] min-w-[250px] z-[12] rotate-[5deg]",
+    articleId: "shrimp",
   },
-] as const;
+];
 
 export function ConsumptionScene() {
   return (
@@ -85,6 +95,7 @@ export function ConsumptionScene() {
           }}
         />
 
+        <AssetArticleProvider>
         <header className="pointer-events-none absolute top-[5%] left-[5%] z-20">
           <ConsumptionTitle />
         </header>
@@ -96,7 +107,10 @@ export function ConsumptionScene() {
         <section className="relative mx-auto h-full w-full max-w-[1600px]">
             <div
               className="phone-fade-in absolute top-[45%] left-[5%] w-[20vw] min-w-[200px] z-[4] rotate-[-25deg]"
-              style={{ animationDelay: "1.3s" }}
+              style={{
+                animationDelay: `${PHONE_FADE_START_S}s`,
+                animationDuration: `${PHONE_FADE_DURATION_S}s`,
+              }}
             >
               <svg
                 className="pointer-events-none absolute top-[-75%] left-[35%] z-0 h-auto w-[320%] rotate-[25deg]"
@@ -127,23 +141,27 @@ export function ConsumptionScene() {
 
               <AssetImage
                 src="/assets/phone.png"
-                title="Lumpy"
-                description="A rounded organic form floating in the lower right."
+                articleId="retreat"
                 className="!relative z-10 w-full"
               />
             </div>
 
-            {assets.map((asset, index) => (
+            {assets.map((asset, index) => {
+              const { left, top } = parseAssetPosition(asset.className);
+              return (
               <AssetImage
                 key={asset.src}
                 src={asset.src}
-                title={asset.title}
-                description={asset.description}
+                articleId={asset.articleId}
                 className={asset.className}
                 animationIndex={index}
+                burstOffset={burstOffsetForPosition(left, top)}
               />
-            ))}
+              );
+            })}
+            <GroupArticleTooltip />
           </section>
+        </AssetArticleProvider>
       </div>
 
       <ConsumptionBodyText />

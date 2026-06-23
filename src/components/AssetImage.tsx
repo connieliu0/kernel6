@@ -1,101 +1,118 @@
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useRef, type CSSProperties } from "react";
+import { useAssetArticle } from "../context/AssetArticleContext";
+import { ASSET_BURST_START_S, ASSET_BURST_STAGGER_S } from "../data/introTiming";
 
 export interface AssetImageProps {
   src: string;
-  title: string;
-  description: string;
+  articleId: string;
   alt?: string;
   className?: string;
   style?: CSSProperties;
   animationIndex?: number;
+  /** Starting offset for the burst-out animation (relative to final position). */
+  burstOffset?: { x: string; y: string };
 }
 
 export function AssetImage({
   src,
-  title,
-  description,
+  articleId,
   alt,
   className = "",
   style,
   animationIndex,
+  burstOffset,
 }: AssetImageProps) {
+  const {
+    hoverFocus,
+    setHoverFocus,
+    assetsInteractive,
+    getArticle,
+    registerTooltipAnchor,
+    unregisterTooltipAnchor,
+  } = useAssetArticle();
   const shouldAnimate = animationIndex !== undefined;
-  const [isHovered, setIsHovered] = useState(false);
-  const [showTooltip, setShowTooltip] = useState(false);
-  const [tooltipPlacement, setTooltipPlacement] = useState<"above" | "below">(
-    "above",
-  );
   const containerRef = useRef<HTMLDivElement>(null);
-  const hoverTimeoutRef = useRef<number | null>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
 
-  useEffect(() => {
-    if (!isHovered) {
-      setShowTooltip(false);
+  const article = getArticle(articleId);
+  const isInFocus =
+    hoverFocus?.type === "article" && hoverFocus.articleId === articleId;
+  const isDimmed = hoverFocus !== null && !isInFocus;
+  const isHighlighted = isInFocus;
+  const isTooltipAnchor = article?.tooltipAnchor === src;
+
+  const handleMouseEnter = () => {
+    if (!assetsInteractive) return;
+    setHoverFocus({ type: "article", articleId });
+  };
+
+  const handleMouseLeave = (event: React.MouseEvent) => {
+    if (!assetsInteractive) return;
+
+    const relatedTarget = event.relatedTarget;
+    if (
+      relatedTarget instanceof Element &&
+      relatedTarget.closest(`[data-article-id="${articleId}"]`)
+    ) {
       return;
     }
 
-    hoverTimeoutRef.current = window.setTimeout(() => {
-      if (containerRef.current) {
-        const rect = containerRef.current.getBoundingClientRect();
-        setTooltipPlacement(rect.top < 120 ? "below" : "above");
-      }
-      setShowTooltip(true);
-    }, 150);
-
-    return () => {
-      if (hoverTimeoutRef.current !== null) {
-        window.clearTimeout(hoverTimeoutRef.current);
-      }
-    };
-  }, [isHovered]);
+    setHoverFocus(null);
+  };
 
   const animationStyle = shouldAnimate
     ? {
         ...style,
-        animationDelay: `${2.05 + animationIndex * 0.07}s`,
-        ...(isHovered ? { zIndex: 100 } : {}),
+        animationDelay: `${ASSET_BURST_START_S + animationIndex * ASSET_BURST_STAGGER_S}s`,
+        "--burst-x": burstOffset?.x ?? "-30vw",
+        "--burst-y": burstOffset?.y ?? "20vh",
+        ...(isHighlighted && assetsInteractive ? { zIndex: 100 } : {}),
       }
-    : isHovered
-      ? { ...style, zIndex: 100 }
+    : isHighlighted
+      ? { ...style, ...(isHighlighted && assetsInteractive ? { zIndex: 100 } : {}) }
       : style;
+
+  const ariaLabel = article
+    ? `${article.title}, ${article.author}: ${article.description}`
+    : alt ?? articleId;
 
   return (
     <div
       ref={containerRef}
-      className={`group absolute cursor-pointer transition-transform duration-300 ease-out hover:scale-[1.03] ${shouldAnimate ? "asset-burst-out" : ""} ${className}`}
+      data-article-id={articleId}
+      className={`group pointer-events-none absolute ${shouldAnimate ? "asset-burst-out" : ""} ${className}`}
       style={animationStyle}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      onFocus={() => setIsHovered(true)}
-      onBlur={() => setIsHovered(false)}
-      tabIndex={0}
-      role="button"
-      aria-label={`${title}: ${description}`}
     >
-      <img
-        src={src}
-        alt={alt ?? title}
-        className="pointer-events-none h-full w-full select-none object-contain"
-        draggable={false}
-      />
-
       <div
-        className={`pointer-events-none absolute left-1/2 z-40 w-max max-w-[220px] -translate-x-1/2 rounded border border-white/15 bg-black/85 px-3 py-2 text-left shadow-lg backdrop-blur-sm transition-all duration-200 ${
-          tooltipPlacement === "above" ? "bottom-full mb-2" : "top-full mt-2"
-        } ${
-          showTooltip
-            ? "translate-y-0 opacity-100"
-            : tooltipPlacement === "above"
-              ? "translate-y-1 opacity-0"
-              : "-translate-y-1 opacity-0"
-        }`}
+        className={`pointer-events-none relative h-full w-full transition-[transform,opacity,filter] duration-300 ease-out ${
+          isDimmed ? "scale-[0.96] opacity-40 blur-[3px]" : "scale-100 opacity-100 blur-0"
+        } ${isHighlighted ? "scale-[1.03]" : ""}`}
       >
-        <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-white">
-          {title}
-        </p>
-        <p className="mt-1 text-[11px] leading-snug text-white/75">
-          {description}
-        </p>
+        <img
+          ref={(node) => {
+            imageRef.current = node;
+            if (!isTooltipAnchor) return;
+            if (node) registerTooltipAnchor(articleId, node);
+            else unregisterTooltipAnchor(articleId);
+          }}
+          src={src}
+          alt={alt ?? article?.title ?? articleId}
+          className={`h-full w-full select-none object-contain ${
+            assetsInteractive
+              ? "pointer-events-auto cursor-pointer"
+              : "pointer-events-none cursor-default"
+          }`}
+          draggable={false}
+          tabIndex={0}
+          role="button"
+          aria-label={ariaLabel}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          onFocus={assetsInteractive ? handleMouseEnter : undefined}
+          onBlur={() => {
+            if (assetsInteractive) setHoverFocus(null);
+          }}
+        />
       </div>
     </div>
   );

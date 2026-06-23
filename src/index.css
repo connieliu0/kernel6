@@ -49,19 +49,19 @@ body {
 
 .consumption-title {
   container-type: inline-size;
-  width: min(34vw, 560px);
+  width: min(24vw, 320px);
 }
 
 @media (min-width: 1025px) {
   .consumption-title {
-    width: min(30vw, 500px);
+    width: min(20vw, 320px);
   }
 }
 
 .consumption-title-letter {
   font-family: "Cotham Sans", sans-serif;
-  font-size: calc(300 / 1231 * 100cqw);
-  letter-spacing: calc(24 / 1231 * 100cqw);
+  font-size: calc(98 / 350 * 100cqw);
+  letter-spacing: calc(6.5 / 350 * 100cqw);
   line-height: 1;
 }
 
@@ -110,7 +110,7 @@ body {
 @keyframes asset-burst {
   0% {
     opacity: 0;
-    translate: -30vw 20vh;
+    translate: var(--burst-x, -30vw) var(--burst-y, 20vh);
     scale: 0.2;
   }
   40% {
@@ -125,7 +125,7 @@ body {
 
 .consumption-subtitle-word {
   font-family: "Cotham Sans", sans-serif;
-  font-size: calc(128 / 907 * 100cqw);
+  font-size: calc(108 / 907 * 100cqw);
   line-height: 1;
 }
 
@@ -136,6 +136,11 @@ body {
 
 .consumption-body-text {
   font-family: "Cotham Sans", sans-serif;
+}
+
+.consumption-body-text input,
+.consumption-body-text button {
+  pointer-events: auto;
 }
 
 @keyframes subtitle-slide-in {

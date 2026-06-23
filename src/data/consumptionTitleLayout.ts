@@ -1,6 +1,6 @@
 export interface TitleLetter {
   char: string;
-  /** Position in the 1231×972 Figma frame */
+  /** Position in the Figma frame (node 1018:1164) */
   x: number;
   y: number;
   rotation: number;
@@ -9,67 +9,67 @@ export interface TitleLetter {
   wrapperHeight?: number;
 }
 
-/** Title letter positions — THE / FEED two-line layout */
-export const TITLE_DESIGN_WIDTH = 1231;
-export const TITLE_DESIGN_HEIGHT = 650;
-export const TITLE_FONT_SIZE = 300;
-export const TITLE_LETTER_SPACING = 24;
+/** Figma node 1018:1164 — THE FEED title letter positions */
+export const TITLE_DESIGN_WIDTH = 350;
+export const TITLE_DESIGN_HEIGHT = 265.01;
+export const TITLE_FONT_SIZE = 116.364;
+export const TITLE_LETTER_SPACING = 9.3091;
 
 export const consumptionTitleLetters: TitleLetter[] = [
   {
     char: "T",
-    x: -52,
-    y: -15,
+    x: 0,
+    y: 3,
     rotation: -18.64,
-    wrapperWidth: 280,
-    wrapperHeight: 340,
+    wrapperWidth: 104.346,
+    wrapperHeight: 132.607,
   },
   {
     char: "H",
-    x: 320,
-    y: -8,
+    x: 92,
+    y: 0,
     rotation: -7.9,
-    wrapperWidth: 290,
-    wrapperHeight: 335,
+    wrapperWidth: 100.13,
+    wrapperHeight: 126.578,
   },
   {
     char: "E",
-    x: 720,
-    y: -20,
-    rotation: 8.54,
-    wrapperWidth: 250,
-    wrapperHeight: 325,
+    x: 195,
+    y: 2,
+    rotation: 4.43,
+    wrapperWidth: 75.754,
+    wrapperHeight: 120.826,
   },
   {
     char: "F",
-    x: -40,
-    y: 310,
+    x: 9.5,
+    y: 141.41,
     rotation: 7.06,
-    wrapperWidth: 260,
-    wrapperHeight: 330,
+    wrapperWidth: 82.732,
+    wrapperHeight: 123.6,
   },
   {
     char: "E",
-    x: 280,
-    y: 335,
-    rotation: 9.25,
-    wrapperWidth: 250,
-    wrapperHeight: 325,
+    x: 96,
+    y: 138,
+    rotation: -10.89,
+    wrapperWidth: 87.712,
+    wrapperHeight: 126.57,
   },
   {
     char: "E",
-    x: 560,
-    y: 320,
-    rotation: -8.78,
-    wrapperWidth: 250,
-    wrapperHeight: 325,
+    x: 180,
+    y: 135.69,
+    rotation: 4.78,
+    wrapperWidth: 76.436,
+    wrapperHeight: 121.181,
   },
   {
     char: "D",
-    x: 840,
-    y: 340,
-    rotation: -7.9,
-    wrapperWidth: 270,
-    wrapperHeight: 330,
+    x: 260,
+    y: 133,
+    rotation: 8.78,
+    wrapperWidth: 96.767,
+    wrapperHeight: 126.851,
   },
 ];
