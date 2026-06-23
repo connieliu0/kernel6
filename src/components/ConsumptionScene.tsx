@@ -31,7 +31,7 @@ const assets: { src: string; className: string; articleId: string }[] = [
     articleId: "corn",
   },
   {
-    src: "/assets/Golf.png",
+    src: "/assets/golf.png",
     className: "top-[15%] left-[47%] w-[20vw] min-w-[100px] z-[8] rotate-[60deg]",
     articleId: "retreat",
   },
