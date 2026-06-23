@@ -43,7 +43,7 @@ export const sceneArticles: Record<string, SceneArticle> = {
     title: "Top 5 Things I Learned From My Dead Wife",
     description:
       "A middle-aged man searches for meaning at a wellness retreat.",
-    tooltipAnchor: "/assets/golf.png",
+    tooltipAnchor: "/assets/golf1.png",
   }
   // },
   // "infinite-feed": {
