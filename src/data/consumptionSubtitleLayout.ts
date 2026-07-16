@@ -25,7 +25,7 @@ export const consumptionSubtitleWords: SubtitleWord[] = [
   },
   {
     char: "what",
-    x: 203.455,
+    x: 135,
     y: 0,
     rotation: 10.39,
     wrapperWidth: 281.777,
@@ -33,11 +33,22 @@ export const consumptionSubtitleWords: SubtitleWord[] = [
   },
   {
     char: "we",
-    x: 495.768,
+    x: 420,
     y: 68.553,
     rotation: -15.16,
     wrapperWidth: 185.969,
     wrapperHeight: 164.856,
   },
-  { char: "eat", x: 735.752, y: 15.673, rotation: 0 },
+  {
+    char: "eat",
+    x: 570,
+    y: 15.673,
+    rotation: 0,
+    wrapperWidth: 210,
+    wrapperHeight: 140,
+  },
 ];
+
+/** Straightened tail slot — sized/positioned for "learn" so it stays on the shared baseline */
+export const SUBTITLE_TAIL_STRAIGHTENED_X = 636;
+export const SUBTITLE_TAIL_LEARN_WIDTH = 270;

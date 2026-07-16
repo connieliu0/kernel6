@@ -52,6 +52,23 @@ export function AssetArticleProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("scroll", update);
   }, []);
 
+  // On touch devices, dismiss the tapped article tooltip when tapping outside.
+  useEffect(() => {
+    if (!hoverFocus) return;
+    if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+
+    const onPointerDown = (event: PointerEvent) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      // Let asset taps switch/toggle focus themselves.
+      if (target.closest("[data-article-id]")) return;
+      setHoverFocus(null);
+    };
+
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, [hoverFocus]);
+
   const registerTooltipAnchor = useCallback(
     (articleId: string, element: HTMLElement) => {
       tooltipAnchorsRef.current.set(articleId, element);

@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { PHONE_FADE_DURATION_S, PHONE_FADE_START_S } from "../data/introTiming";
 import { AssetArticleProvider } from "../context/AssetArticleContext";
 import { AssetImage } from "./AssetImage";
@@ -5,6 +6,8 @@ import { ConsumptionBodyText } from "./ConsumptionBodyText";
 import { ConsumptionSubtitle } from "./ConsumptionSubtitle";
 import { ConsumptionTitle } from "./ConsumptionTitle";
 import { GroupArticleTooltip } from "./GroupArticleTooltip.tsx";
+import { ProductionScene } from "./ProductionScene";
+import { StraightenSlider } from "./StraightenSlider";
 
 const PHONE_ANCHOR = { left: 5, top: 45 };
 
@@ -31,8 +34,9 @@ const assets: { src: string; className: string; articleId: string }[] = [
     articleId: "corn",
   },
   {
-    src: "/assets/golf.png",
-    className: "top-[15%] left-[47%] w-[20vw] min-w-[100px] z-[8] rotate-[60deg]",
+    src: "/assets/golf1.png",
+    className:
+      "top-[15%] max-[768px]:top-[28%] left-[47%] w-[20vw] min-w-[100px] z-[8] rotate-[60deg]",
     articleId: "retreat",
   },
   {
@@ -83,28 +87,67 @@ const assets: { src: string; className: string; articleId: string }[] = [
 ];
 
 export function ConsumptionScene() {
+  const [straighten, setStraighten] = useState(0);
+  const [showProduction, setShowProduction] = useState(false);
+  const [collageFading, setCollageFading] = useState(false);
+
+  useEffect(() => {
+    if (straighten >= 0.995 && !showProduction) {
+      setCollageFading(true);
+      const timer = window.setTimeout(() => {
+        setShowProduction(true);
+      }, 600);
+      return () => window.clearTimeout(timer);
+    } else if (straighten < 0.995 && showProduction) {
+      setShowProduction(false);
+      setCollageFading(false);
+    }
+  }, [straighten, showProduction]);
+
   return (
     <main className="relative w-full overflow-x-hidden bg-black">
-      <div className="fixed inset-0 z-0 h-screen w-full overflow-hidden">
+      <AssetArticleProvider>
         <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(128deg, rgba(210,210,210,0.55) 0%, rgba(120,120,120,0.18) 38%, rgba(0,0,0,0) 62%)",
-          }}
-        />
+          className={`fixed inset-0 z-0 h-screen w-full overflow-hidden transition-[background] duration-700 ${
+            collageFading ? "bg-white" : "bg-black"
+          }`}
+        >
+          <div
+            aria-hidden
+            className={`collage-fade-out pointer-events-none absolute inset-0 ${
+              collageFading ? "fading" : ""
+            }`}
+            style={{
+              background:
+                "linear-gradient(128deg, rgba(210,210,210,0.55) 0%, rgba(120,120,120,0.18) 38%, rgba(0,0,0,0) 62%)",
+            }}
+          />
 
-        <AssetArticleProvider>
-        <header className="pointer-events-none absolute top-[5%] left-[5%] z-20">
-          <ConsumptionTitle />
-        </header>
+          <header
+            className={`title-color-transition pointer-events-none absolute top-[5%] left-[5%] z-30 flex items-start gap-[4vw] ${
+              collageFading ? "inverted" : ""
+            }`}
+          >
+            <div className="flex flex-col">
+              <ConsumptionTitle straighten={straighten} />
+              <div
+                className={`straighten-slider-container pointer-events-auto transition-[filter] duration-500 ${
+                  collageFading ? "invert" : ""
+                }`}
+              >
+                <StraightenSlider value={straighten} onChange={setStraighten} />
+              </div>
+            </div>
+            <div className="max-[768px]:hidden">
+              <ConsumptionSubtitle straighten={straighten} />
+            </div>
+          </header>
 
-        <footer className="pointer-events-none absolute right-[5%] bottom-[5%] z-20">
-          <ConsumptionSubtitle />
-        </footer>
-
-        <section className="relative mx-auto h-full w-full max-w-[1600px]">
+          <section
+            className={`collage-fade-out relative mx-auto h-full w-full max-w-[1600px] ${
+              collageFading ? "fading" : ""
+            }`}
+          >
             <div
               className="phone-fade-in absolute top-[45%] left-[5%] w-[20vw] min-w-[200px] z-[4] rotate-[-25deg]"
               style={{
@@ -149,22 +192,24 @@ export function ConsumptionScene() {
             {assets.map((asset, index) => {
               const { left, top } = parseAssetPosition(asset.className);
               return (
-              <AssetImage
-                key={asset.src}
-                src={asset.src}
-                articleId={asset.articleId}
-                className={asset.className}
-                animationIndex={index}
-                burstOffset={burstOffsetForPosition(left, top)}
-              />
+                <AssetImage
+                  key={asset.src}
+                  src={asset.src}
+                  articleId={asset.articleId}
+                  className={asset.className}
+                  animationIndex={index}
+                  burstOffset={burstOffsetForPosition(left, top)}
+                />
               );
             })}
             <GroupArticleTooltip />
           </section>
-        </AssetArticleProvider>
-      </div>
 
-      <ConsumptionBodyText />
+          <ProductionScene active={showProduction} />
+        </div>
+
+        <ConsumptionBodyText />
+      </AssetArticleProvider>
     </main>
   );
 }

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { consumptionBodyParagraphs } from "../data/consumptionBodyText";
 import { ASSETS_INTRO_COMPLETE_MS } from "../data/introTiming";
+import { ConsumptionSubtitle } from "./ConsumptionSubtitle";
 import { SignupForm } from "./SignupForm";
 
 const PULL_SCROLL_RATIO = 0.85;
@@ -113,6 +114,9 @@ export function ConsumptionBodyText() {
         style={{ top: "100vh", opacity: 0, willChange: "top, opacity, transform" }}
       >
         <div ref={signupRef}>
+          <div className="mb-4 max-[768px]:block min-[769px]:hidden">
+            <ConsumptionSubtitle variant="inline" />
+          </div>
           <SignupForm />
         </div>
         {consumptionBodyParagraphs.map((paragraph, index) => (

@@ -15,8 +15,19 @@ function pctY(value: number) {
   return `${(value / TITLE_DESIGN_HEIGHT) * 100}%`;
 }
 
-function TitleLetter({ letter, index }: { letter: TitleLetter; index: number }) {
+function TitleLetter({
+  letter,
+  index,
+  straighten,
+}: {
+  letter: TitleLetter;
+  index: number;
+  straighten: number;
+}) {
   const startRotation = index % 2 === 0 ? -45 : 45;
+  const rowBaseline = index < 3 ? 0 : 135;
+  const y = letter.y + (rowBaseline - letter.y) * straighten;
+  const rotation = letter.rotation * (1 - straighten);
 
   if (letter.wrapperWidth && letter.wrapperHeight) {
     return (
@@ -24,7 +35,7 @@ function TitleLetter({ letter, index }: { letter: TitleLetter; index: number }) 
         className="consumption-letter-wrapper absolute flex items-center justify-center"
         style={{
           left: pctX(letter.x),
-          top: pctY(letter.y),
+          top: pctY(y),
           width: pctX(letter.wrapperWidth),
           height: pctY(letter.wrapperHeight),
           "--start-rotation": `${startRotation}deg`,
@@ -33,7 +44,7 @@ function TitleLetter({ letter, index }: { letter: TitleLetter; index: number }) 
       >
         <span
           className="consumption-title-letter whitespace-nowrap text-white not-italic"
-          style={{ transform: `rotate(${letter.rotation}deg)` }}
+          style={{ transform: `rotate(${rotation}deg)` }}
         >
           {letter.char}
         </span>
@@ -46,9 +57,10 @@ function TitleLetter({ letter, index }: { letter: TitleLetter; index: number }) 
       className="consumption-letter-wrapper consumption-title-letter absolute whitespace-nowrap text-white not-italic"
       style={{
         left: pctX(letter.x),
-        top: pctY(letter.y),
+        top: pctY(y),
         "--start-rotation": `${startRotation}deg`,
         animationDelay: `${index * TITLE_LETTER_STAGGER_S}s`,
+        transform: `rotate(${rotation}deg)`,
       } as React.CSSProperties}
     >
       {letter.char}
@@ -56,7 +68,7 @@ function TitleLetter({ letter, index }: { letter: TitleLetter; index: number }) 
   );
 }
 
-export function ConsumptionTitle() {
+export function ConsumptionTitle({ straighten = 0 }: { straighten?: number }) {
   const { hoverFocus } = useAssetArticle();
   const isDefocused = hoverFocus !== null;
 
@@ -71,7 +83,12 @@ export function ConsumptionTitle() {
       aria-label="The Feed"
     >
       {consumptionTitleLetters.map((letter, index) => (
-        <TitleLetter key={`${letter.char}-${index}`} letter={letter} index={index} />
+        <TitleLetter
+          key={`${letter.char}-${index}`}
+          letter={letter}
+          index={index}
+          straighten={straighten}
+        />
       ))}
     </h1>
   );

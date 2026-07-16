@@ -26,7 +26,7 @@ export const consumptionTitleLetters: TitleLetter[] = [
   },
   {
     char: "H",
-    x: 92,
+    x: 83,
     y: 0,
     rotation: -7.9,
     wrapperWidth: 100.13,
@@ -34,7 +34,7 @@ export const consumptionTitleLetters: TitleLetter[] = [
   },
   {
     char: "E",
-    x: 195,
+    x: 176,
     y: 2,
     rotation: 4.43,
     wrapperWidth: 75.754,
@@ -50,7 +50,7 @@ export const consumptionTitleLetters: TitleLetter[] = [
   },
   {
     char: "E",
-    x: 96,
+    x: 87,
     y: 138,
     rotation: -10.89,
     wrapperWidth: 87.712,
@@ -58,7 +58,7 @@ export const consumptionTitleLetters: TitleLetter[] = [
   },
   {
     char: "E",
-    x: 180,
+    x: 163,
     y: 135.69,
     rotation: 4.78,
     wrapperWidth: 76.436,
@@ -66,7 +66,7 @@ export const consumptionTitleLetters: TitleLetter[] = [
   },
   {
     char: "D",
-    x: 260,
+    x: 235,
     y: 133,
     rotation: 8.78,
     wrapperWidth: 96.767,

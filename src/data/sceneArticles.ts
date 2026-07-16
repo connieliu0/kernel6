@@ -44,31 +44,30 @@ export const sceneArticles: Record<string, SceneArticle> = {
     description:
       "A middle-aged man searches for meaning at a wellness retreat.",
     tooltipAnchor: "/assets/golf1.png",
-  }
-  // },
-  // "infinite-feed": {
-  //   author: "Tomás Guarna",
-  //   title: "A Media History of the Infinite Feed",
-  //   description: "Doomscrolling was a design choice.",
-  //   tooltipAnchor: "/assets/Cat 1.png",
-  // },
-  // "johor-land": {
-  //   author: "Ann Irvina Ravinther",
-  //   title: "Changing hands, Johor's land",
-  //   description:
-  //     "A triptych of resource exploitation in Johor, Malaysia.",
-  //   tooltipAnchor: "/assets/wrench 1.png",
-  // },
-  // "fried-egg": {
-  //   author: "Sophie Wu",
-  //   title: "How to Cite a Fried Egg",
-  //   description: "How the Wikipedia article for sausage gets made.",
-  //   tooltipAnchor: "/assets/hammer 1.png",
-  // },
-  // online: {
-  //   author: "Isabel Paban Freed",
-  //   title: "Problems of the Online",
-  //   description: "Some questions of consumption.",
-  //   tooltipAnchor: "/assets/Golf.png",
-  // },
+  },
+  "infinite-feed": {
+    author: "Tomás Guarna",
+    title: "A Media History of the Infinite Feed",
+    description: "Doomscrolling was a design choice.",
+    tooltipAnchor: "/assets/production/Frame 128.png",
+  },
+  "johor-land": {
+    author: "Ann Irvina Ravinther",
+    title: "Changing hands, Johor’s land",
+    description:
+      "A triptych of resource exploitation in Johor, Malaysia.",
+    tooltipAnchor: "/assets/production/image 131.png",
+  },
+  "fried-egg": {
+    author: "Sophie Wu",
+    title: "How to Cite a Fried Egg",
+    description: "How the Wikipedia article for sausage gets made.",
+    tooltipAnchor: "/assets/production/image 134.png",
+  },
+  "problems-online": {
+    author: "Isabel Paban Freed",
+    title: "Problems of the Online",
+    description: "Some questions of consumption.",
+    tooltipAnchor: "/assets/production/image 130.png",
+  },
 };

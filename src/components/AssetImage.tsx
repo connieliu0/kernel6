@@ -1,6 +1,13 @@
-import { useRef, type CSSProperties } from "react";
+import { useRef, type CSSProperties, type KeyboardEvent } from "react";
 import { useAssetArticle } from "../context/AssetArticleContext";
 import { ASSET_BURST_START_S, ASSET_BURST_STAGGER_S } from "../data/introTiming";
+
+/** Scroll distance on asset click — enough to pull more body text into view. */
+const TEXT_REVEAL_SCROLL_RATIO = 0.28;
+
+function canHover() {
+  return window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+}
 
 export interface AssetImageProps {
   src: string;
@@ -42,12 +49,12 @@ export function AssetImage({
   const isTooltipAnchor = article?.tooltipAnchor === src;
 
   const handleMouseEnter = () => {
-    if (!assetsInteractive) return;
+    if (!assetsInteractive || !canHover()) return;
     setHoverFocus({ type: "article", articleId });
   };
 
   const handleMouseLeave = (event: React.MouseEvent) => {
-    if (!assetsInteractive) return;
+    if (!assetsInteractive || !canHover()) return;
 
     const relatedTarget = event.relatedTarget;
     if (
@@ -58,6 +65,28 @@ export function AssetImage({
     }
 
     setHoverFocus(null);
+  };
+
+  const handleActivate = () => {
+    if (!assetsInteractive) return;
+
+    if (canHover()) {
+      window.scrollBy({
+        top: window.innerHeight * TEXT_REVEAL_SCROLL_RATIO,
+        behavior: "smooth",
+      });
+      return;
+    }
+
+    // Touch / no-hover: tap reveals the article tooltip (toggle to dismiss).
+    setHoverFocus(isInFocus ? null : { type: "article", articleId });
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLImageElement>) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      handleActivate();
+    }
   };
 
   const animationStyle = shouldAnimate
@@ -99,7 +128,7 @@ export function AssetImage({
           alt={alt ?? article?.title ?? articleId}
           className={`h-full w-full select-none object-contain ${
             assetsInteractive
-              ? "pointer-events-auto cursor-pointer"
+              ? "pointer-events-auto cursor-zoom-in"
               : "pointer-events-none cursor-default"
           }`}
           draggable={false}
@@ -108,9 +137,11 @@ export function AssetImage({
           aria-label={ariaLabel}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
+          onClick={handleActivate}
+          onKeyDown={handleKeyDown}
           onFocus={assetsInteractive ? handleMouseEnter : undefined}
           onBlur={() => {
-            if (assetsInteractive) setHoverFocus(null);
+            if (assetsInteractive && canHover()) setHoverFocus(null);
           }}
         />
       </div>
