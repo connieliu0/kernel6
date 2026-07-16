@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import {
   DESIGN_WIDTH,
   DESIGN_HEIGHT,
