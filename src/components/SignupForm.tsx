@@ -49,7 +49,7 @@ export function SignupForm() {
           rel="noopener noreferrer"
           className="shrink-0 border border-black border-solid bg-white px-2 py-1.5 text-center text-[16px] leading-[28px] text-black transition-opacity hover:opacity-90"
         >
-          Purchase issue
+          Purchase issue ↗
         </a>
         <form
           className="flex min-w-0 flex-1 items-stretch"
