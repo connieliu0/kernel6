@@ -116,8 +116,8 @@ export function GroupArticleTooltip() {
       <p className="text-[12px] font-semibold leading-snug text-white">
         {article.title}
       </p>
-      <p className="mt-1 text-[10px] text-white/55">{article.author}</p>
-      <p className="mt-1.5 text-[11px] leading-snug text-white/75">
+      <p className="mt-1 text-[12px] text-white/55">{article.author}</p>
+      <p className="mt-1.5 text-[12px] leading-snug text-white/75">
         {article.description}
       </p>
     </div>

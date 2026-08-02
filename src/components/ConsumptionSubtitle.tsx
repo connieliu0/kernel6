@@ -10,7 +10,6 @@ import {
 import { SUBTITLE_START_S, SUBTITLE_WORD_STAGGER_S } from "../data/introTiming";
 import { useAssetArticle } from "../context/AssetArticleContext";
 
-const SUBTITLE_BASELINE_Y = 20;
 const WORD_SWAP_BLUR_MS = 280;
 
 function pctX(value: number) {
@@ -36,7 +35,8 @@ function SubtitleWord({
 }) {
   const animationDelay = `${SUBTITLE_START_S + index * SUBTITLE_WORD_STAGGER_S}s`;
   const isTail = index === consumptionSubtitleWords.length - 1;
-  const y = word.y + (SUBTITLE_BASELINE_Y - word.y) * straighten;
+  const targetY = word.straightenedY ?? word.y;
+  const y = word.y + (targetY - word.y) * straighten;
   const rotation = word.rotation * (1 - straighten);
   const x = isTail
     ? word.x + (SUBTITLE_TAIL_STRAIGHTENED_X - word.x) * straighten
@@ -106,8 +106,6 @@ export function ConsumptionSubtitle({
   tailWordRef.current = tailWord;
 
   useEffect(() => {
-    if (variant === "inline") return;
-
     const target = straighten >= 0.995 ? "learn" : "eat";
     if (target === tailWordRef.current) {
       setTailMorphing(false);
@@ -131,7 +129,7 @@ export function ConsumptionSubtitle({
       window.clearTimeout(swapTimer);
       window.clearTimeout(clearTimer);
     };
-  }, [straighten, variant]);
+  }, [straighten]);
 
   const phrase = `is what we ${tailWord}`;
 
@@ -153,9 +151,9 @@ export function ConsumptionSubtitle({
             key={`${word.char}-${index}`}
             word={word}
             index={index}
-            straighten={variant === "inline" ? 0 : straighten}
-            label={isTail && variant !== "inline" ? tailWord : word.char}
-            morphing={isTail && variant !== "inline" && tailMorphing}
+            straighten={straighten}
+            label={isTail ? tailWord : word.char}
+            morphing={isTail && tailMorphing}
           />
         );
       })}

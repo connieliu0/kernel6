@@ -8,10 +8,36 @@ import {
   HORIZONTAL_LINES,
   VERTICAL_LINES,
   GRID_IMAGES,
+  MOBILE_LAYOUT_MAX_WIDTH,
+  type GridLine,
 } from "../data/productionLayout";
+import { AssetImage } from "./AssetImage";
 
 function pct(px: number, total: number) {
   return `${(px / total) * 100}%`;
+}
+
+function useIsMobileLayout() {
+  const [isMobile, setIsMobile] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia(`(max-width: ${MOBILE_LAYOUT_MAX_WIDTH}px)`).matches
+  );
+
+  useEffect(() => {
+    const mql = window.matchMedia(`(max-width: ${MOBILE_LAYOUT_MAX_WIDTH}px)`);
+    const onChange = () => setIsMobile(mql.matches);
+    onChange();
+    mql.addEventListener("change", onChange);
+    return () => mql.removeEventListener("change", onChange);
+  }, []);
+
+  return isMobile;
+}
+
+function formatLineExport(l: GridLine) {
+  const hide = l.hiddenOnMobile ? ", hiddenOnMobile: true" : "";
+  return `  { position: ${l.position.toFixed(1)}, solidStart: ${l.solidStart}, solidEnd: ${l.solidEnd}, weight: ${l.weight}${hide} },`;
 }
 
 function HorizontalLine({
@@ -20,14 +46,17 @@ function HorizontalLine({
   delay,
   editMode,
   onDrag,
+  onToggleMobileHide,
 }: {
-  line: (typeof HORIZONTAL_LINES)[number];
+  line: GridLine;
   drawn: boolean;
   delay: number;
   editMode: boolean;
   onDrag?: (newPosition: number) => void;
+  onToggleMobileHide?: () => void;
 }) {
   const isFull = line.solidStart === 0 && line.solidEnd === 100;
+  const hiddenOnMobile = Boolean(line.hiddenOnMobile);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!editMode || !onDrag) return;
@@ -61,12 +90,17 @@ function HorizontalLine({
         transition: editMode ? "none" : `clip-path 0.8s cubic-bezier(0.33, 1, 0.68, 1)`,
         transitionDelay: editMode ? "0s" : `${delay}s`,
         zIndex: editMode ? 100 : "auto",
+        opacity: editMode && hiddenOnMobile ? 0.35 : 1,
       }}
       onMouseDown={handleMouseDown}
     >
       <div
         className="absolute left-0 w-full"
-        style={{ top: editMode ? "4px" : 0, height: `${line.weight}px` }}
+        style={{
+          top: editMode ? "4px" : 0,
+          height: `${line.weight}px`,
+          outline: editMode && hiddenOnMobile ? "1px dashed #f97316" : undefined,
+        }}
       >
         {isFull ? (
           <div style={{ width: "100%", height: "100%", background: LINE_COLOR }} />
@@ -100,6 +134,22 @@ function HorizontalLine({
           </div>
         )}
       </div>
+      {editMode && onToggleMobileHide && (
+        <button
+          type="button"
+          className={`absolute left-2 top-1/2 z-[110] -translate-y-1/2 rounded px-1.5 py-0.5 text-[10px] font-mono shadow ${
+            hiddenOnMobile ? "bg-orange-500 text-white" : "bg-black/80 text-white"
+          }`}
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleMobileHide();
+          }}
+          title={hiddenOnMobile ? "Show on mobile" : "Hide on mobile"}
+        >
+          {hiddenOnMobile ? "mobile off" : "mobile on"}
+        </button>
+      )}
     </div>
   );
 }
@@ -110,14 +160,17 @@ function VerticalLine({
   delay,
   editMode,
   onDrag,
+  onToggleMobileHide,
 }: {
-  line: (typeof VERTICAL_LINES)[number];
+  line: GridLine;
   drawn: boolean;
   delay: number;
   editMode: boolean;
   onDrag?: (newPosition: number) => void;
+  onToggleMobileHide?: () => void;
 }) {
   const isFull = line.solidStart === 0 && line.solidEnd === 100;
+  const hiddenOnMobile = Boolean(line.hiddenOnMobile);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!editMode || !onDrag) return;
@@ -151,12 +204,17 @@ function VerticalLine({
         transition: editMode ? "none" : `clip-path 0.8s cubic-bezier(0.33, 1, 0.68, 1)`,
         transitionDelay: editMode ? "0s" : `${delay}s`,
         zIndex: editMode ? 100 : "auto",
+        opacity: editMode && hiddenOnMobile ? 0.35 : 1,
       }}
       onMouseDown={handleMouseDown}
     >
       <div
         className="absolute top-0 h-full"
-        style={{ left: editMode ? "4px" : 0, width: `${line.weight}px` }}
+        style={{
+          left: editMode ? "4px" : 0,
+          width: `${line.weight}px`,
+          outline: editMode && hiddenOnMobile ? "1px dashed #f97316" : undefined,
+        }}
       >
         {isFull ? (
           <div style={{ width: "100%", height: "100%", background: LINE_COLOR }} />
@@ -190,6 +248,22 @@ function VerticalLine({
           </div>
         )}
       </div>
+      {editMode && onToggleMobileHide && (
+        <button
+          type="button"
+          className={`absolute top-2 left-1/2 z-[110] -translate-x-1/2 whitespace-nowrap rounded px-1.5 py-0.5 text-[10px] font-mono shadow ${
+            hiddenOnMobile ? "bg-orange-500 text-white" : "bg-black/80 text-white"
+          }`}
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleMobileHide();
+          }}
+          title={hiddenOnMobile ? "Show on mobile" : "Hide on mobile"}
+        >
+          {hiddenOnMobile ? "mobile off" : "mobile on"}
+        </button>
+      )}
     </div>
   );
 }
@@ -257,16 +331,32 @@ function DraggableImage({
     window.addEventListener("mouseup", onUp);
   };
 
+  const positionStyle = {
+    left: pct(img.left, DESIGN_WIDTH),
+    top: pct(img.top, DESIGN_HEIGHT),
+    width: pct(img.width, DESIGN_WIDTH),
+    height: pct(img.height, DESIGN_HEIGHT),
+    transitionDelay: editMode ? "0s" : `${index * 0.08}s`,
+  };
+
+  if (!editMode) {
+    return (
+      <AssetImage
+        src={img.src}
+        articleId={img.articleId}
+        className="production-image overflow-hidden"
+        style={positionStyle}
+        objectFit="cover"
+      />
+    );
+  }
+
   return (
     <div
-      className={`production-image absolute overflow-hidden ${editMode ? "cursor-move ring-2 ring-blue-500 ring-offset-1" : ""}`}
+      className="production-image absolute overflow-hidden cursor-move ring-2 ring-blue-500 ring-offset-1"
       style={{
-        left: pct(img.left, DESIGN_WIDTH),
-        top: pct(img.top, DESIGN_HEIGHT),
-        width: pct(img.width, DESIGN_WIDTH),
-        height: pct(img.height, DESIGN_HEIGHT),
-        transitionDelay: editMode ? "0s" : `${index * 0.08}s`,
-        zIndex: editMode ? 50 : "auto",
+        ...positionStyle,
+        zIndex: 50,
       }}
       onMouseDown={handleMouseDown}
     >
@@ -277,17 +367,13 @@ function DraggableImage({
         loading="eager"
         draggable={false}
       />
-      {editMode && (
-        <>
-          <div className="absolute bottom-0 left-0 bg-black/80 text-white text-[10px] px-1 py-0.5 font-mono">
-            {img.left}, {img.top} | {img.width}×{img.height}
-          </div>
-          <div
-            className="absolute bottom-0 right-0 w-4 h-4 bg-blue-500 cursor-se-resize"
-            onMouseDown={handleResizeMouseDown}
-          />
-        </>
-      )}
+      <div className="absolute bottom-0 left-0 bg-black/80 text-white text-[10px] px-1 py-0.5 font-mono">
+        {img.left}, {img.top} | {img.width}×{img.height}
+      </div>
+      <div
+        className="absolute bottom-0 right-0 w-4 h-4 bg-blue-500 cursor-se-resize"
+        onMouseDown={handleResizeMouseDown}
+      />
     </div>
   );
 }
@@ -295,11 +381,13 @@ function DraggableImage({
 export function ProductionScene({ active }: { active: boolean }) {
   const [sceneVisible, setSceneVisible] = useState(false);
   const [editMode, setEditMode] = useState(false);
+  const [previewMobile, setPreviewMobile] = useState(false);
+  const isMobileLayout = useIsMobileLayout();
 
-  const [hLines, setHLines] = useState(() =>
+  const [hLines, setHLines] = useState<GridLine[]>(() =>
     HORIZONTAL_LINES.map((l) => ({ ...l }))
   );
-  const [vLines, setVLines] = useState(() =>
+  const [vLines, setVLines] = useState<GridLine[]>(() =>
     VERTICAL_LINES.map((l) => ({ ...l }))
   );
   const [images, setImages] = useState(() =>
@@ -309,6 +397,11 @@ export function ProductionScene({ active }: { active: boolean }) {
       top: img.top + IMAGE_OFFSET_Y,
     }))
   );
+
+  // Outside edit mode: hide flagged lines on real mobile widths.
+  // In edit mode: show all (dimmed) unless Preview Mobile is on.
+  const suppressMobileHidden =
+    (editMode && previewMobile) || (!editMode && isMobileLayout);
 
   useEffect(() => {
     if (!active) {
@@ -323,20 +416,36 @@ export function ProductionScene({ active }: { active: boolean }) {
     };
   }, [active]);
 
+  const toggleHMobileHide = (index: number) => {
+    setHLines((prev) => {
+      const next = [...prev];
+      next[index] = { ...next[index], hiddenOnMobile: !next[index].hiddenOnMobile };
+      return next;
+    });
+  };
+
+  const toggleVMobileHide = (index: number) => {
+    setVLines((prev) => {
+      const next = [...prev];
+      next[index] = { ...next[index], hiddenOnMobile: !next[index].hiddenOnMobile };
+      return next;
+    });
+  };
+
   const copyLayout = () => {
     const output = `// Horizontal lines
 export const HORIZONTAL_LINES = [
-${hLines.map((l) => `  { position: ${l.position.toFixed(1)}, solidStart: ${l.solidStart}, solidEnd: ${l.solidEnd}, weight: ${l.weight} },`).join("\n")}
+${hLines.map(formatLineExport).join("\n")}
 ];
 
 // Vertical lines
 export const VERTICAL_LINES = [
-${vLines.map((l) => `  { position: ${l.position.toFixed(1)}, solidStart: ${l.solidStart}, solidEnd: ${l.solidEnd}, weight: ${l.weight} },`).join("\n")}
+${vLines.map(formatLineExport).join("\n")}
 ];
 
 // Images (with offsets already applied)
 export const GRID_IMAGES = [
-${images.map((img) => `  { src: "${img.src}", left: ${img.left}, top: ${img.top}, width: ${img.width}, height: ${img.height} },`).join("\n")}
+${images.map((img) => `  { src: "${img.src}", left: ${img.left}, top: ${img.top}, width: ${img.width}, height: ${img.height}, articleId: "${img.articleId}" },`).join("\n")}
 ];`;
     navigator.clipboard.writeText(output);
     alert("Layout copied to clipboard!");
@@ -349,57 +458,127 @@ ${images.map((img) => `  { src: "${img.src}", left: ${img.left}, top: ${img.top}
       }`}
       style={{ background: "#fff" }}
     >
-      {/* Edit mode toggle */}
-      <button
-        onClick={() => setEditMode(!editMode)}
-        className="fixed top-4 right-4 z-[200] bg-black text-white px-3 py-1.5 text-sm rounded shadow-lg hover:bg-gray-800"
-      >
-        {editMode ? "Exit Edit Mode" : "Edit Layout"}
-      </button>
+      <div className="fixed top-4 right-4 z-[200] flex flex-wrap justify-end gap-2">
+        {editMode && (
+          <>
+            <button
+              onClick={() => setPreviewMobile((v) => !v)}
+              className={`px-3 py-1.5 text-sm rounded shadow-lg ${
+                previewMobile
+                  ? "bg-orange-500 text-white hover:bg-orange-600"
+                  : "bg-white text-black border border-black/20 hover:bg-gray-100"
+              }`}
+            >
+              {previewMobile ? "Exit Mobile Preview" : "Preview Mobile"}
+            </button>
+            <button
+              onClick={copyLayout}
+              className="bg-blue-600 text-white px-3 py-1.5 text-sm rounded shadow-lg hover:bg-blue-700"
+            >
+              Copy Layout
+            </button>
+          </>
+        )}
+        <button
+          onClick={() => {
+            setEditMode(!editMode);
+            if (editMode) setPreviewMobile(false);
+          }}
+          className="bg-black text-white px-3 py-1.5 text-sm rounded shadow-lg hover:bg-gray-800"
+        >
+          {editMode ? "Exit Edit Mode" : "Edit Layout"}
+        </button>
+      </div>
 
       {editMode && (
-        <button
-          onClick={copyLayout}
-          className="fixed top-4 right-32 z-[200] bg-blue-600 text-white px-3 py-1.5 text-sm rounded shadow-lg hover:bg-blue-700"
-        >
-          Copy Layout
-        </button>
+        <aside className="fixed top-16 left-4 z-[200] max-h-[calc(100vh-5rem)] w-56 overflow-y-auto rounded bg-black/90 p-3 text-white shadow-lg">
+          <p className="mb-2 text-xs font-semibold tracking-wide uppercase opacity-80">
+            Hide on mobile
+          </p>
+          <p className="mb-3 text-[10px] leading-snug opacity-60">
+            Checked lines are off at ≤{MOBILE_LAYOUT_MAX_WIDTH}px. Use Preview Mobile to see the result.
+          </p>
+
+          <p className="mb-1 text-[10px] font-semibold opacity-70">Horizontal</p>
+          <ul className="mb-3 space-y-1">
+            {hLines.map((line, i) => (
+              <li key={`h-toggle-${i}`}>
+                <label className="flex cursor-pointer items-center gap-2 text-[11px] font-mono">
+                  <input
+                    type="checkbox"
+                    checked={Boolean(line.hiddenOnMobile)}
+                    onChange={() => toggleHMobileHide(i)}
+                  />
+                  <span className={line.hiddenOnMobile ? "text-orange-300" : ""}>
+                    H{i} · {line.position.toFixed(1)}%
+                  </span>
+                </label>
+              </li>
+            ))}
+          </ul>
+
+          <p className="mb-1 text-[10px] font-semibold opacity-70">Vertical</p>
+          <ul className="space-y-1">
+            {vLines.map((line, i) => (
+              <li key={`v-toggle-${i}`}>
+                <label className="flex cursor-pointer items-center gap-2 text-[11px] font-mono">
+                  <input
+                    type="checkbox"
+                    checked={Boolean(line.hiddenOnMobile)}
+                    onChange={() => toggleVMobileHide(i)}
+                  />
+                  <span className={line.hiddenOnMobile ? "text-orange-300" : ""}>
+                    V{i} · {line.position.toFixed(1)}%
+                  </span>
+                </label>
+              </li>
+            ))}
+          </ul>
+        </aside>
       )}
 
       <div className="production-grid absolute inset-0 z-20">
-        {hLines.map((line, i) => (
-          <HorizontalLine
-            key={`h-${i}`}
-            line={line}
-            drawn={sceneVisible || editMode}
-            delay={i * 0.06}
-            editMode={editMode}
-            onDrag={(pos) => {
-              setHLines((prev) => {
-                const next = [...prev];
-                next[i] = { ...next[i], position: pos };
-                return next;
-              });
-            }}
-          />
-        ))}
+        {hLines.map((line, i) => {
+          if (suppressMobileHidden && line.hiddenOnMobile) return null;
+          return (
+            <HorizontalLine
+              key={`h-${i}`}
+              line={line}
+              drawn={sceneVisible || editMode}
+              delay={i * 0.06}
+              editMode={editMode}
+              onDrag={(pos) => {
+                setHLines((prev) => {
+                  const next = [...prev];
+                  next[i] = { ...next[i], position: pos };
+                  return next;
+                });
+              }}
+              onToggleMobileHide={() => toggleHMobileHide(i)}
+            />
+          );
+        })}
 
-        {vLines.map((line, i) => (
-          <VerticalLine
-            key={`v-${i}`}
-            line={line}
-            drawn={sceneVisible || editMode}
-            delay={0.05 + i * 0.05}
-            editMode={editMode}
-            onDrag={(pos) => {
-              setVLines((prev) => {
-                const next = [...prev];
-                next[i] = { ...next[i], position: pos };
-                return next;
-              });
-            }}
-          />
-        ))}
+        {vLines.map((line, i) => {
+          if (suppressMobileHidden && line.hiddenOnMobile) return null;
+          return (
+            <VerticalLine
+              key={`v-${i}`}
+              line={line}
+              drawn={sceneVisible || editMode}
+              delay={0.05 + i * 0.05}
+              editMode={editMode}
+              onDrag={(pos) => {
+                setVLines((prev) => {
+                  const next = [...prev];
+                  next[i] = { ...next[i], position: pos };
+                  return next;
+                });
+              }}
+              onToggleMobileHide={() => toggleVMobileHide(i)}
+            />
+          );
+        })}
 
         <div className={`absolute inset-0 ${sceneVisible || editMode ? "production-images-visible" : ""}`}>
           {images

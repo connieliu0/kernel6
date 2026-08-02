@@ -5,10 +5,16 @@ import { ConsumptionSubtitle } from "./ConsumptionSubtitle";
 import { SignupForm } from "./SignupForm";
 
 const PULL_SCROLL_RATIO = 0.85;
-const BODY_LINE_HEIGHT = 16 * 1.6;
-const CARD_PADDING_TOP = 40;
+/** Matches `pt-8` on the card. */
+const CARD_PADDING_TOP = 32;
+/** Extra peek so the signup bar sits a bit higher in the viewport. */
+const PEEK_LIFT = 12;
 
-export function ConsumptionBodyText() {
+export function ConsumptionBodyText({
+  straighten = 0,
+}: {
+  straighten?: number;
+}) {
   const trackRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLElement>(null);
   const signupRef = useRef<HTMLDivElement>(null);
@@ -19,7 +25,8 @@ export function ConsumptionBodyText() {
   useEffect(() => {
     const measure = () => {
       const signupHeight = signupRef.current?.offsetHeight ?? 0;
-      setPeekHeight(CARD_PADDING_TOP + signupHeight + BODY_LINE_HEIGHT);
+      // Peek only the CTA row + gap below it — keep the first body line hidden.
+      setPeekHeight(CARD_PADDING_TOP + signupHeight);
     };
 
     measure();
@@ -40,7 +47,7 @@ export function ConsumptionBodyText() {
     const viewportHeight = window.innerHeight;
     const pullDistance = viewportHeight * PULL_SCROLL_RATIO;
     const restingTop = viewportHeight * 0.12;
-    const peekTop = viewportHeight - peekHeight;
+    const peekTop = viewportHeight - peekHeight - PEEK_LIFT;
     const scrollY = window.scrollY;
     const cardHeight = card.offsetHeight;
 
@@ -110,12 +117,12 @@ export function ConsumptionBodyText() {
     <div ref={trackRef} className="pointer-events-none relative z-30" aria-hidden={false}>
       <article
         ref={cardRef}
-        className="consumption-body-text pointer-events-none fixed left-1/2 w-[500px] max-w-[calc(100%-2.5rem)] bg-black/90 px-8 py-10 text-[16px] leading-[1.6] text-white"
+        className="consumption-body-text pointer-events-none fixed left-1/2 w-[500px] max-w-[calc(100%-2.5rem)] bg-black/90 px-8 pt-8 pb-10 text-[16px] leading-[1.6] text-white"
         style={{ top: "100vh", opacity: 0, willChange: "top, opacity, transform" }}
       >
         <div ref={signupRef}>
-          <div className="mb-4 max-[768px]:block min-[769px]:hidden">
-            <ConsumptionSubtitle variant="inline" />
+          <div className="mb-4 w-[70%] max-[768px]:block min-[769px]:hidden">
+            <ConsumptionSubtitle variant="inline" straighten={straighten} />
           </div>
           <SignupForm />
         </div>

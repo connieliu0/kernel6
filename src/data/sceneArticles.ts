@@ -49,25 +49,32 @@ export const sceneArticles: Record<string, SceneArticle> = {
     author: "Tomás Guarna",
     title: "A Media History of the Infinite Feed",
     description: "Doomscrolling was a design choice.",
-    tooltipAnchor: "/assets/production/Frame 128.png",
+    tooltipAnchor: "/assets/production/infinite1.png",
   },
   "johor-land": {
     author: "Ann Irvina Ravinther",
     title: "Changing hands, Johor’s land",
     description:
       "A triptych of resource exploitation in Johor, Malaysia.",
-    tooltipAnchor: "/assets/production/image 131.png",
+    tooltipAnchor: "/assets/production/johor2.png",
   },
   "fried-egg": {
     author: "Sophie Wu",
     title: "How to Cite a Fried Egg",
     description: "How the Wikipedia article for sausage gets made.",
-    tooltipAnchor: "/assets/production/image 134.png",
+    tooltipAnchor: "/assets/production/egg1.png",
   },
   "problems-online": {
     author: "Isabel Paban Freed",
     title: "Problems of the Online",
     description: "Some questions of consumption.",
-    tooltipAnchor: "/assets/production/image 130.png",
+    tooltipAnchor: "/assets/production/online1.png",
+  },
+  echocardiogram: {
+    author: "Vincent Huang",
+    title: "Echocardiogram",
+    description:
+      "After a health scare, she learns to trust herself over the Oracle.",
+    tooltipAnchor: "/assets/production/echo1.png",
   },
 };

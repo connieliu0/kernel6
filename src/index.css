@@ -47,21 +47,25 @@ body {
   font-family: "Cotham Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-.consumption-title {
-  container-type: inline-size;
-  width: min(24vw, 320px);
+:root {
+  --title-width: min(24vw, 320px);
 }
 
 @media (max-width: 768px) {
-  .consumption-title {
-    width: min(48vw, 220px);
+  :root {
+    --title-width: min(48vw, 220px);
   }
 }
 
 @media (min-width: 1025px) {
-  .consumption-title {
-    width: min(20vw, 320px);
+  :root {
+    --title-width: min(20vw, 320px);
   }
+}
+
+.consumption-title {
+  container-type: inline-size;
+  width: var(--title-width);
 }
 
 .consumption-title-letter {
@@ -160,57 +164,48 @@ body {
   }
 }
 
+/* Inset to the glyph edges of T/F and D within the 350-unit title frame. */
 .straighten-slider {
-  width: min(24vw, 320px);
+  width: calc(var(--title-width) * 0.877);
+  margin-left: calc(var(--title-width) * 0.047);
 }
 
-@media (max-width: 768px) {
-  .straighten-slider {
-    width: min(48vw, 220px);
-  }
-}
-
-@media (min-width: 1025px) {
-  .straighten-slider {
-    width: min(20vw, 320px);
-  }
-}
-
-.straighten-slider input[type="range"] {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100%;
-  height: 2px;
-  margin: 10px 0;
-  background: rgba(255, 255, 255, 0.35);
-  outline: none;
-  cursor: pointer;
-}
-
-.straighten-slider input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
+.straighten-slider-thumb {
   width: 14px;
   height: 14px;
-  border-radius: 50%;
-  background: #fff;
-  border: none;
-  cursor: pointer;
+  transform: translate(-50%, -50%);
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
 }
 
-.straighten-slider input[type="range"]::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: #fff;
-  border: none;
-  cursor: pointer;
+.straighten-slider-input {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+  background: transparent;
+  outline: none;
 }
 
-.straighten-slider input[type="range"]::-moz-range-track {
-  height: 2px;
-  background: rgba(255, 255, 255, 0.35);
+.straighten-slider-input::-webkit-slider-runnable-track {
+  background: transparent;
+}
+
+.straighten-slider-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  opacity: 0;
+}
+
+.straighten-slider-input::-moz-range-track {
+  background: transparent;
+}
+
+.straighten-slider-input::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: none;
+  opacity: 0;
 }
 
 .production-scene {

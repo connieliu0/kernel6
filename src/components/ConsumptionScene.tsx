@@ -130,11 +130,7 @@ export function ConsumptionScene() {
           >
             <div className="flex flex-col">
               <ConsumptionTitle straighten={straighten} />
-              <div
-                className={`straighten-slider-container pointer-events-auto transition-[filter] duration-500 ${
-                  collageFading ? "invert" : ""
-                }`}
-              >
+              <div className="straighten-slider-container pointer-events-auto">
                 <StraightenSlider value={straighten} onChange={setStraighten} />
               </div>
             </div>
@@ -202,13 +198,13 @@ export function ConsumptionScene() {
                 />
               );
             })}
-            <GroupArticleTooltip />
           </section>
 
           <ProductionScene active={showProduction} />
+          <GroupArticleTooltip />
         </div>
 
-        <ConsumptionBodyText />
+        <ConsumptionBodyText straighten={straighten} />
       </AssetArticleProvider>
     </main>
   );

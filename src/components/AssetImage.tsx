@@ -18,6 +18,7 @@ export interface AssetImageProps {
   animationIndex?: number;
   /** Starting offset for the burst-out animation (relative to final position). */
   burstOffset?: { x: string; y: string };
+  objectFit?: "contain" | "cover";
 }
 
 export function AssetImage({
@@ -28,6 +29,7 @@ export function AssetImage({
   style,
   animationIndex,
   burstOffset,
+  objectFit = "contain",
 }: AssetImageProps) {
   const {
     hoverFocus,
@@ -126,7 +128,9 @@ export function AssetImage({
           }}
           src={src}
           alt={alt ?? article?.title ?? articleId}
-          className={`h-full w-full select-none object-contain ${
+          className={`h-full w-full select-none ${
+            objectFit === "cover" ? "object-cover" : "object-contain"
+          } ${
             assetsInteractive
               ? "pointer-events-auto cursor-zoom-in"
               : "pointer-events-none cursor-default"
