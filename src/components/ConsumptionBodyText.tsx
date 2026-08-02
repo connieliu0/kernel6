@@ -8,7 +8,7 @@ const PULL_SCROLL_RATIO = 0.85;
 /** Matches `pt-8` on the card. */
 const CARD_PADDING_TOP = 32;
 /** Extra peek so the signup bar sits a bit higher in the viewport. */
-const PEEK_LIFT = 12;
+const PEEK_LIFT = 28;
 
 export function ConsumptionBodyText({
   straighten = 0,

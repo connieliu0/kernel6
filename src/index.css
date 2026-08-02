@@ -215,12 +215,14 @@ body {
 .production-image {
   opacity: 0;
   transform: scale(0.96);
-  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  transition: opacity 0.45s ease-out, transform 0.45s ease-out;
+  pointer-events: none;
 }
 
-.production-images-visible .production-image {
+.production-image.production-image-revealed {
   opacity: 1;
   transform: scale(1);
+  pointer-events: auto;
 }
 
 .collage-fade-out {

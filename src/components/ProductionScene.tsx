@@ -272,11 +272,13 @@ function DraggableImage({
   img,
   index,
   editMode,
+  revealed,
   onUpdate,
 }: {
   img: (typeof GRID_IMAGES)[number] & { left: number; top: number };
   index: number;
   editMode: boolean;
+  revealed: boolean;
   onUpdate?: (left: number, top: number, width: number, height: number) => void;
 }) {
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -344,7 +346,7 @@ function DraggableImage({
       <AssetImage
         src={img.src}
         articleId={img.articleId}
-        className="production-image overflow-hidden"
+        className={`production-image overflow-hidden ${revealed ? "production-image-revealed" : ""}`}
         style={positionStyle}
         objectFit="cover"
       />
@@ -353,7 +355,7 @@ function DraggableImage({
 
   return (
     <div
-      className="production-image absolute overflow-hidden cursor-move ring-2 ring-blue-500 ring-offset-1"
+      className="production-image production-image-revealed absolute overflow-hidden cursor-move ring-2 ring-blue-500 ring-offset-1"
       style={{
         ...positionStyle,
         zIndex: 50,
@@ -484,7 +486,7 @@ ${images.map((img) => `  { src: "${img.src}", left: ${img.left}, top: ${img.top}
             setEditMode(!editMode);
             if (editMode) setPreviewMobile(false);
           }}
-          className="bg-black text-white px-3 py-1.5 text-sm rounded shadow-lg hover:bg-gray-800"
+          className="hidden bg-black text-white px-3 py-1.5 text-sm rounded shadow-lg hover:bg-gray-800"
         >
           {editMode ? "Exit Edit Mode" : "Edit Layout"}
         </button>
@@ -580,7 +582,7 @@ ${images.map((img) => `  { src: "${img.src}", left: ${img.left}, top: ${img.top}
           );
         })}
 
-        <div className={`absolute inset-0 ${sceneVisible || editMode ? "production-images-visible" : ""}`}>
+        <div className="absolute inset-0">
           {images
             .map((img, i) => {
               // Diagonal score: bottom-left = low, top-right = high
@@ -594,6 +596,7 @@ ${images.map((img) => `  { src: "${img.src}", left: ${img.left}, top: ${img.top}
                 img={img}
                 index={sortedIndex}
                 editMode={editMode}
+                revealed={sceneVisible || editMode}
                 onUpdate={(left, top, width, height) => {
                   setImages((prev) => {
                     const next = [...prev];

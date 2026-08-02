@@ -69,13 +69,13 @@ export function SignupForm() {
             placeholder="Sign up for updates"
             required
             disabled={submitState === "loading" || submitState === "success"}
-            className="min-w-0 flex-1 border border-black border-solid bg-white px-1 py-1.5 text-[16px] leading-[28px] text-black placeholder:text-black/50 outline-none disabled:opacity-60"
+            className="min-w-0 flex-1 border border-white border-solid bg-white px-1 py-1.5 text-[16px] leading-[28px] text-black placeholder:text-black/50 outline-none disabled:opacity-60"
             aria-label="Email address"
           />
           <button
             type="submit"
             disabled={submitState === "loading" || submitState === "success"}
-            className="shrink-0 border border-black border-solid bg-black px-2 py-1.5 text-[16px] leading-[28px] text-white transition-opacity hover:opacity-90 disabled:opacity-60"
+            className="shrink-0 border-l-2 border-solid border-l-black bg-white px-2 py-1.5 text-[16px] leading-[28px] text-black transition-opacity hover:opacity-90 disabled:opacity-60"
           >
             {submitState === "loading" ? "..." : "→"}
           </button>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { PHONE_FADE_DURATION_S, PHONE_FADE_START_S } from "../data/introTiming";
 import { AssetArticleProvider } from "../context/AssetArticleContext";
 import { AssetImage } from "./AssetImage";
@@ -7,7 +7,6 @@ import { ConsumptionSubtitle } from "./ConsumptionSubtitle";
 import { ConsumptionTitle } from "./ConsumptionTitle";
 import { GroupArticleTooltip } from "./GroupArticleTooltip.tsx";
 import { ProductionScene } from "./ProductionScene";
-import { StraightenSlider } from "./StraightenSlider";
 
 const PHONE_ANCHOR = { left: 5, top: 45 };
 
@@ -86,10 +85,45 @@ const assets: { src: string; className: string; articleId: string }[] = [
   },
 ];
 
+const TRANSITION_DURATION_MS = 600;
+
 export function ConsumptionScene() {
   const [straighten, setStraighten] = useState(0);
   const [showProduction, setShowProduction] = useState(false);
   const [collageFading, setCollageFading] = useState(false);
+  const animationRef = useRef<number | null>(null);
+
+  const handleToggle = useCallback(() => {
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+    }
+
+    const startTime = performance.now();
+    const startValue = straighten;
+    const targetValue = straighten < 0.5 ? 1 : 0;
+
+    const animate = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / TRANSITION_DURATION_MS, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const newValue = startValue + (targetValue - startValue) * eased;
+      setStraighten(newValue);
+
+      if (progress < 1) {
+        animationRef.current = requestAnimationFrame(animate);
+      }
+    };
+
+    animationRef.current = requestAnimationFrame(animate);
+  }, [straighten]);
+
+  useEffect(() => {
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (straighten >= 0.995 && !showProduction) {
@@ -129,10 +163,7 @@ export function ConsumptionScene() {
             }`}
           >
             <div className="flex flex-col">
-              <ConsumptionTitle straighten={straighten} />
-              <div className="straighten-slider-container pointer-events-auto">
-                <StraightenSlider value={straighten} onChange={setStraighten} />
-              </div>
+              <ConsumptionTitle straighten={straighten} onToggle={handleToggle} />
             </div>
             <div className="max-[768px]:hidden">
               <ConsumptionSubtitle straighten={straighten} />

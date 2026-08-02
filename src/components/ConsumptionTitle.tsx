@@ -6,6 +6,7 @@ import {
 } from "../data/consumptionTitleLayout";
 import { TITLE_LETTER_STAGGER_S } from "../data/introTiming";
 import { useAssetArticle } from "../context/AssetArticleContext";
+import { RefreshButton } from "./RefreshButton";
 
 function pctX(value: number) {
   return `${(value / TITLE_DESIGN_WIDTH) * 100}%`;
@@ -68,7 +69,13 @@ function TitleLetter({
   );
 }
 
-export function ConsumptionTitle({ straighten = 0 }: { straighten?: number }) {
+export function ConsumptionTitle({
+  straighten = 0,
+  onToggle,
+}: {
+  straighten?: number;
+  onToggle?: () => void;
+}) {
   const { hoverFocus } = useAssetArticle();
   const isDefocused = hoverFocus !== null;
 
@@ -90,6 +97,18 @@ export function ConsumptionTitle({ straighten = 0 }: { straighten?: number }) {
           straighten={straighten}
         />
       ))}
+      {onToggle && (
+        <span
+          className="absolute flex items-center justify-center"
+          style={{
+            left: pctX(338),
+            top: pctY(160),
+            transform: `rotate(${8.78 * (1 - straighten)}deg)`,
+          }}
+        >
+          <RefreshButton onRefresh={onToggle} />
+        </span>
+      )}
     </h1>
   );
 }

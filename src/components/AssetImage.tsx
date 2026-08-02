@@ -116,8 +116,8 @@ export function AssetImage({
     >
       <div
         className={`pointer-events-none relative h-full w-full transition-[transform,opacity,filter] duration-300 ease-out ${
-          isDimmed ? "scale-[0.96] opacity-40 blur-[3px]" : "scale-100 opacity-100 blur-0"
-        } ${isHighlighted ? "scale-[1.03]" : ""}`}
+          isDimmed ? "opacity-15 blur-[3px]" : "opacity-100 blur-0"
+        } ${isHighlighted ? "scale-[1.03]" : "scale-100"}`}
       >
         <img
           ref={(node) => {

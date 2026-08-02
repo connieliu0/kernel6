@@ -20,14 +20,17 @@ function resolvePlacement(
 }
 
 export function GroupArticleTooltip() {
-  const { hoverFocus, getArticle, getTooltipAnchor } = useAssetArticle();
+  const { hoverFocus, assetsInteractive, getArticle, getTooltipAnchor } =
+    useAssetArticle();
   const [visible, setVisible] = useState(false);
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const [placement, setPlacement] = useState<"above" | "below">("above");
   const timeoutRef = useRef<number | null>(null);
 
   const articleId =
-    hoverFocus?.type === "article" ? hoverFocus.articleId : null;
+    assetsInteractive && hoverFocus?.type === "article"
+      ? hoverFocus.articleId
+      : null;
   const article = articleId ? getArticle(articleId) : undefined;
 
   useEffect(() => {

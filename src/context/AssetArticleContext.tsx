@@ -12,6 +12,7 @@ import {
   sceneArticles,
   type SceneArticle,
 } from "../data/sceneArticles";
+import { ASSETS_INTRO_COMPLETE_MS } from "../data/introTiming";
 
 export type HoverFocus = { type: "article"; articleId: string } | null;
 
@@ -34,13 +35,23 @@ const AssetArticleContext = createContext<AssetArticleContextValue | null>(
 
 export function AssetArticleProvider({ children }: { children: ReactNode }) {
   const [hoverFocus, setHoverFocus] = useState<HoverFocus>(null);
-  const [assetsInteractive, setAssetsInteractive] = useState(true);
+  const [introComplete, setIntroComplete] = useState(false);
+  const [scrollAllowsInteraction, setScrollAllowsInteraction] = useState(true);
   const tooltipAnchorsRef = useRef<Map<string, HTMLElement>>(new Map());
+
+  const assetsInteractive = introComplete && scrollAllowsInteraction;
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setIntroComplete(true);
+    }, ASSETS_INTRO_COMPLETE_MS);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const update = () => {
       const scrolling = window.scrollY > SCROLL_INTERACTION_THRESHOLD;
-      setAssetsInteractive(!scrolling);
+      setScrollAllowsInteraction(!scrolling);
       if (scrolling) {
         setHoverFocus(null);
       }

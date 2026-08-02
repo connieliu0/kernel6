@@ -5,13 +5,14 @@ type StraightenSliderProps = {
   onChange: (value: number) => void;
 };
 
-const TRACK_WIDTH = 300;
+const TRACK_WIDTH = 220;
 const TRACK_HEIGHT = 40;
 const BASELINE = TRACK_HEIGHT / 2;
-const MAX_AMPLITUDE = 14;
-/** Portion of the track (in viewBox units) where the squiggle decays to flat. */
-const DECAY_WIDTH = TRACK_WIDTH * 0.62;
-const WAVELENGTH = 58;
+const MAX_AMPLITUDE = 12;
+/** Portion of the track (in viewBox units) where the bump decays to flat. */
+const DECAY_WIDTH = TRACK_WIDTH * 0.5;
+/** One full cycle across the decay region before the track goes flat. */
+const WAVELENGTH = DECAY_WIDTH;
 
 function amplitudeAt(x: number) {
   if (x >= DECAY_WIDTH) return 0;
@@ -52,13 +53,11 @@ export function StraightenSlider({ value, onChange }: StraightenSliderProps) {
   const wavePath = useMemo(() => buildWavePath(), []);
   const thumbX = value * TRACK_WIDTH;
   const thumbY = waveY(thumbX);
-  /** Matches the subtitle swap to "learn" at full straighten. */
-  const isLearned = value >= 0.995;
   /** Parent header inverts on the light background, so this flips to black there. */
   const color = "#fff";
 
   return (
-    <label className="straighten-slider pointer-events-auto mt-[0.8vw] flex w-full cursor-pointer flex-col gap-1.5">
+    <label className="straighten-slider pointer-events-auto mt-[0.2vw] flex w-full cursor-pointer flex-col gap-1.5">
       <span className="sr-only">Straighten title</span>
       <div
         className="straighten-slider-track relative w-full"
@@ -80,9 +79,7 @@ export function StraightenSlider({ value, onChange }: StraightenSliderProps) {
           />
         </svg>
         <div
-          className={`straighten-slider-thumb pointer-events-none absolute transition-[border-radius,background-color] duration-300 ease-out ${
-            isLearned ? "rounded-none" : "rounded-full"
-          }`}
+          className="straighten-slider-thumb pointer-events-none absolute rounded-none transition-[background-color] duration-300 ease-out"
           style={{
             left: `${(thumbX / TRACK_WIDTH) * 100}%`,
             top: thumbY,
