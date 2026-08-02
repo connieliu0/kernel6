@@ -101,7 +101,7 @@ export function GroupArticleTooltip() {
 
   const tooltip = (
     <div
-      className={`pointer-events-none fixed z-[200] w-max max-w-[260px] rounded border border-white/15 bg-black/85 px-3 py-2.5 text-left shadow-lg backdrop-blur-sm transition-opacity duration-200 ${
+      className={`pointer-events-none fixed z-[200] w-max max-w-[260px] border border-white/15 bg-black/85 px-3 py-2.5 text-left shadow-lg backdrop-blur-sm transition-opacity duration-200 ${
         visible ? "opacity-100" : "opacity-0"
       }`}
       style={{

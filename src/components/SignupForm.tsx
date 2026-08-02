@@ -42,7 +42,7 @@ export function SignupForm() {
 
   return (
     <div className="mb-10">
-      <div className="flex w-full flex-col gap-2 min-[480px]:flex-row min-[480px]:items-stretch">
+      <div className="flex w-full flex-col gap-6 min-[480px]:flex-row min-[480px]:items-stretch">
         <a
           href="https://shop.kernelmag.io/products/kernel-magazine-issue-6"
           target="_blank"

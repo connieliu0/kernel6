@@ -11,7 +11,7 @@ const BASELINE = TRACK_HEIGHT / 2;
 const MAX_AMPLITUDE = 14;
 /** Portion of the track (in viewBox units) where the squiggle decays to flat. */
 const DECAY_WIDTH = TRACK_WIDTH * 0.62;
-const WAVELENGTH = 38;
+const WAVELENGTH = 58;
 
 function amplitudeAt(x: number) {
   if (x >= DECAY_WIDTH) return 0;
