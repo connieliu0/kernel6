@@ -7,6 +7,7 @@ type RefreshButtonProps = {
 
 export function RefreshButton({ onRefresh, color = "#fff" }: RefreshButtonProps) {
   const [spinning, setSpinning] = useState(false);
+  const [rotation, setRotation] = useState(0);
   const timeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -18,6 +19,7 @@ export function RefreshButton({ onRefresh, color = "#fff" }: RefreshButtonProps)
   const handleClick = () => {
     if (spinning) return;
     setSpinning(true);
+    setRotation((prev) => prev + 180);
     onRefresh();
     timeoutRef.current = window.setTimeout(() => {
       setSpinning(false);
@@ -28,7 +30,7 @@ export function RefreshButton({ onRefresh, color = "#fff" }: RefreshButtonProps)
     <button
       type="button"
       onClick={handleClick}
-      className="refresh-button pointer-events-auto flex cursor-pointer items-center justify-center opacity-80 transition-opacity hover:opacity-100"
+      className="refresh-button pointer-events-auto flex cursor-pointer items-center justify-center border-none bg-transparent p-0 opacity-80 transition-opacity hover:opacity-100"
       aria-label="Toggle view"
       style={{
         width: "3em",
@@ -40,7 +42,7 @@ export function RefreshButton({ onRefresh, color = "#fff" }: RefreshButtonProps)
         viewBox="0 0 640 640"
         className="h-full w-full transition-transform duration-500 ease-out"
         style={{
-          transform: spinning ? "rotate(360deg)" : "rotate(0deg)",
+          transform: `rotate(${rotation}deg)`,
         }}
       >
         <path

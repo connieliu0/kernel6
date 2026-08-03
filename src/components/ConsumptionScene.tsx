@@ -132,11 +132,12 @@ export function ConsumptionScene() {
         setShowProduction(true);
       }, 600);
       return () => window.clearTimeout(timer);
-    } else if (straighten < 0.995 && showProduction) {
-      setShowProduction(false);
-      setCollageFading(false);
+    } else if (straighten < 0.995) {
+      // Reset both states when going back, regardless of showProduction
+      if (showProduction) setShowProduction(false);
+      if (collageFading) setCollageFading(false);
     }
-  }, [straighten, showProduction]);
+  }, [straighten, showProduction, collageFading]);
 
   return (
     <main className="relative w-full overflow-x-hidden bg-black">

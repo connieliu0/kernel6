@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   DESIGN_WIDTH,
   DESIGN_HEIGHT,
@@ -274,12 +274,14 @@ function DraggableImage({
   editMode,
   revealed,
   onUpdate,
+  skipDelay = false,
 }: {
   img: (typeof GRID_IMAGES)[number] & { left: number; top: number };
   index: number;
   editMode: boolean;
   revealed: boolean;
   onUpdate?: (left: number, top: number, width: number, height: number) => void;
+  skipDelay?: boolean;
 }) {
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!editMode || !onUpdate) return;
@@ -338,7 +340,7 @@ function DraggableImage({
     top: pct(img.top, DESIGN_HEIGHT),
     width: pct(img.width, DESIGN_WIDTH),
     height: pct(img.height, DESIGN_HEIGHT),
-    transitionDelay: editMode ? "0s" : `${index * 0.08}s`,
+    transitionDelay: editMode || skipDelay ? "0s" : `${index * 0.08}s`,
   };
 
   if (!editMode) {
@@ -384,6 +386,7 @@ export function ProductionScene({ active }: { active: boolean }) {
   const [sceneVisible, setSceneVisible] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [previewMobile, setPreviewMobile] = useState(false);
+  const hasBeenShownRef = useRef(false);
   const isMobileLayout = useIsMobileLayout();
 
   const [hLines, setHLines] = useState<GridLine[]>(() =>
@@ -411,11 +414,18 @@ export function ProductionScene({ active }: { active: boolean }) {
       return;
     }
 
-    const timer = window.setTimeout(() => setSceneVisible(true), 400);
+    if (hasBeenShownRef.current) {
+      setSceneVisible(true);
+    } else {
+      const timer = window.setTimeout(() => {
+        setSceneVisible(true);
+        hasBeenShownRef.current = true;
+      }, 400);
 
-    return () => {
-      window.clearTimeout(timer);
-    };
+      return () => {
+        window.clearTimeout(timer);
+      };
+    }
   }, [active]);
 
   const toggleHMobileHide = (index: number) => {
@@ -547,7 +557,7 @@ ${images.map((img) => `  { src: "${img.src}", left: ${img.left}, top: ${img.top}
               key={`h-${i}`}
               line={line}
               drawn={sceneVisible || editMode}
-              delay={i * 0.06}
+              delay={hasBeenShownRef.current ? 0 : i * 0.06}
               editMode={editMode}
               onDrag={(pos) => {
                 setHLines((prev) => {
@@ -568,7 +578,7 @@ ${images.map((img) => `  { src: "${img.src}", left: ${img.left}, top: ${img.top}
               key={`v-${i}`}
               line={line}
               drawn={sceneVisible || editMode}
-              delay={0.05 + i * 0.05}
+              delay={hasBeenShownRef.current ? 0 : 0.05 + i * 0.05}
               editMode={editMode}
               onDrag={(pos) => {
                 setVLines((prev) => {
@@ -597,6 +607,7 @@ ${images.map((img) => `  { src: "${img.src}", left: ${img.left}, top: ${img.top}
                 index={sortedIndex}
                 editMode={editMode}
                 revealed={sceneVisible || editMode}
+                skipDelay={hasBeenShownRef.current}
                 onUpdate={(left, top, width, height) => {
                   setImages((prev) => {
                     const next = [...prev];

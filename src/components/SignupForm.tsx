@@ -52,7 +52,7 @@ export function SignupForm() {
           Purchase issue ↗
         </a>
         <form
-          className="flex min-w-0 flex-1 items-stretch"
+          className="flex min-w-0 flex-1 items-stretch border border-white border-solid bg-white"
           onSubmit={handleSubmit}
           noValidate
         >
@@ -69,13 +69,13 @@ export function SignupForm() {
             placeholder="Sign up for updates"
             required
             disabled={submitState === "loading" || submitState === "success"}
-            className="min-w-0 flex-1 border border-white border-solid bg-white px-1 py-1.5 text-[16px] leading-[28px] text-black placeholder:text-black/50 outline-none disabled:opacity-60"
+            className="min-w-0 flex-1 border-0 bg-transparent px-1 py-1.5 text-[16px] leading-[28px] text-black placeholder:text-black/50 outline-none disabled:opacity-60"
             aria-label="Email address"
           />
           <button
             type="submit"
             disabled={submitState === "loading" || submitState === "success"}
-            className="shrink-0 border-l-2 border-solid border-l-black bg-white px-2 py-1.5 text-[16px] leading-[28px] text-black transition-opacity hover:opacity-90 disabled:opacity-60"
+            className="flex shrink-0 items-center justify-center border-l-4bg-transparent px-2 text-[18px] leading-[28px] text-black transition-opacity hover:opacity-90 disabled:opacity-60"
           >
             {submitState === "loading" ? "..." : "→"}
           </button>
