@@ -19,6 +19,8 @@ export interface AssetImageProps {
   /** Starting offset for the burst-out animation (relative to final position). */
   burstOffset?: { x: string; y: string };
   objectFit?: "contain" | "cover";
+  /** Force disable hover/click interactions regardless of global state. */
+  disableInteraction?: boolean;
 }
 
 export function AssetImage({
@@ -30,15 +32,17 @@ export function AssetImage({
   animationIndex,
   burstOffset,
   objectFit = "contain",
+  disableInteraction = false,
 }: AssetImageProps) {
   const {
     hoverFocus,
     setHoverFocus,
-    assetsInteractive,
+    assetsInteractive: globalAssetsInteractive,
     getArticle,
     registerTooltipAnchor,
     unregisterTooltipAnchor,
   } = useAssetArticle();
+  const assetsInteractive = globalAssetsInteractive && !disableInteraction;
   const shouldAnimate = animationIndex !== undefined;
   const containerRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);

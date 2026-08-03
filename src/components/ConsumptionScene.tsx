@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { PHONE_FADE_DURATION_S, PHONE_FADE_START_S } from "../data/introTiming";
-import { AssetArticleProvider } from "../context/AssetArticleContext";
+import { AssetArticleProvider, useAssetArticle } from "../context/AssetArticleContext";
 import { AssetImage } from "./AssetImage";
 import { ConsumptionBodyText } from "./ConsumptionBodyText";
 import { ConsumptionSubtitle } from "./ConsumptionSubtitle";
@@ -87,11 +87,17 @@ const assets: { src: string; className: string; articleId: string }[] = [
 
 const TRANSITION_DURATION_MS = 600;
 
-export function ConsumptionScene() {
+function ConsumptionSceneInner() {
   const [straighten, setStraighten] = useState(0);
   const [showProduction, setShowProduction] = useState(false);
   const [collageFading, setCollageFading] = useState(false);
   const animationRef = useRef<number | null>(null);
+  const { setHoverFocus } = useAssetArticle();
+
+  // Clear hover focus when switching between scenes to prevent bleed-through
+  useEffect(() => {
+    setHoverFocus(null);
+  }, [showProduction, collageFading, setHoverFocus]);
 
   const handleToggle = useCallback(() => {
     if (animationRef.current) {
@@ -141,7 +147,6 @@ export function ConsumptionScene() {
 
   return (
     <main className="relative w-full overflow-x-hidden bg-black">
-      <AssetArticleProvider>
         <div
           className={`fixed inset-0 z-0 h-screen w-full overflow-hidden transition-[background] duration-700 ${
             collageFading ? "bg-white" : "bg-black"
@@ -173,7 +178,7 @@ export function ConsumptionScene() {
 
           <section
             className={`collage-fade-out relative mx-auto h-full w-full max-w-[1600px] ${
-              collageFading ? "fading" : ""
+              collageFading ? "fading pointer-events-none" : ""
             }`}
           >
             <div
@@ -237,7 +242,14 @@ export function ConsumptionScene() {
         </div>
 
         <ConsumptionBodyText straighten={straighten} />
-      </AssetArticleProvider>
     </main>
+  );
+}
+
+export function ConsumptionScene() {
+  return (
+    <AssetArticleProvider>
+      <ConsumptionSceneInner />
+    </AssetArticleProvider>
   );
 }

@@ -257,6 +257,10 @@ body {
   pointer-events: auto;
 }
 
+.production-image.production-image-instant {
+  transition: none;
+}
+
 .collage-fade-out {
   transition: opacity 0.6s ease-out, filter 0.6s ease-out;
 }

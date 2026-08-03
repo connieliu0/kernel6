@@ -45,6 +45,7 @@ function HorizontalLine({
   drawn,
   delay,
   editMode,
+  instant,
   onDrag,
   onToggleMobileHide,
 }: {
@@ -52,6 +53,7 @@ function HorizontalLine({
   drawn: boolean;
   delay: number;
   editMode: boolean;
+  instant: boolean;
   onDrag?: (newPosition: number) => void;
   onToggleMobileHide?: () => void;
 }) {
@@ -87,8 +89,8 @@ function HorizontalLine({
         height: editMode ? "10px" : `${line.weight}px`,
         marginTop: editMode ? "-5px" : 0,
         clipPath: drawn ? "inset(0 0 0 0)" : "inset(0 100% 0 0)",
-        transition: editMode ? "none" : `clip-path 0.8s cubic-bezier(0.33, 1, 0.68, 1)`,
-        transitionDelay: editMode ? "0s" : `${delay}s`,
+        transition: editMode || instant ? "none" : `clip-path 0.8s cubic-bezier(0.33, 1, 0.68, 1)`,
+        transitionDelay: editMode || instant ? "0s" : `${delay}s`,
         zIndex: editMode ? 100 : "auto",
         opacity: editMode && hiddenOnMobile ? 0.35 : 1,
       }}
@@ -159,6 +161,7 @@ function VerticalLine({
   drawn,
   delay,
   editMode,
+  instant,
   onDrag,
   onToggleMobileHide,
 }: {
@@ -166,6 +169,7 @@ function VerticalLine({
   drawn: boolean;
   delay: number;
   editMode: boolean;
+  instant: boolean;
   onDrag?: (newPosition: number) => void;
   onToggleMobileHide?: () => void;
 }) {
@@ -201,8 +205,8 @@ function VerticalLine({
         width: editMode ? "10px" : `${line.weight}px`,
         marginLeft: editMode ? "-5px" : 0,
         clipPath: drawn ? "inset(0 0 0 0)" : "inset(0 0 100% 0)",
-        transition: editMode ? "none" : `clip-path 0.8s cubic-bezier(0.33, 1, 0.68, 1)`,
-        transitionDelay: editMode ? "0s" : `${delay}s`,
+        transition: editMode || instant ? "none" : `clip-path 0.8s cubic-bezier(0.33, 1, 0.68, 1)`,
+        transitionDelay: editMode || instant ? "0s" : `${delay}s`,
         zIndex: editMode ? 100 : "auto",
         opacity: editMode && hiddenOnMobile ? 0.35 : 1,
       }}
@@ -274,14 +278,16 @@ function DraggableImage({
   editMode,
   revealed,
   onUpdate,
-  skipDelay = false,
+  instant = false,
+  disableInteraction = false,
 }: {
   img: (typeof GRID_IMAGES)[number] & { left: number; top: number };
   index: number;
   editMode: boolean;
   revealed: boolean;
   onUpdate?: (left: number, top: number, width: number, height: number) => void;
-  skipDelay?: boolean;
+  instant?: boolean;
+  disableInteraction?: boolean;
 }) {
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!editMode || !onUpdate) return;
@@ -340,7 +346,7 @@ function DraggableImage({
     top: pct(img.top, DESIGN_HEIGHT),
     width: pct(img.width, DESIGN_WIDTH),
     height: pct(img.height, DESIGN_HEIGHT),
-    transitionDelay: editMode || skipDelay ? "0s" : `${index * 0.08}s`,
+    transitionDelay: editMode || instant ? "0s" : `${index * 0.08}s`,
   };
 
   if (!editMode) {
@@ -348,9 +354,10 @@ function DraggableImage({
       <AssetImage
         src={img.src}
         articleId={img.articleId}
-        className={`production-image overflow-hidden ${revealed ? "production-image-revealed" : ""}`}
+        className={`production-image overflow-hidden ${revealed ? "production-image-revealed" : ""} ${instant ? "production-image-instant" : ""}`}
         style={positionStyle}
         objectFit="cover"
+        disableInteraction={disableInteraction}
       />
     );
   }
@@ -419,11 +426,16 @@ export function ProductionScene({ active }: { active: boolean }) {
     } else {
       const timer = window.setTimeout(() => {
         setSceneVisible(true);
-        hasBeenShownRef.current = true;
       }, 400);
+
+      // Mark as shown after the initial animation completes (~1.5s after scene becomes visible)
+      const markShownTimer = window.setTimeout(() => {
+        hasBeenShownRef.current = true;
+      }, 400 + 1500);
 
       return () => {
         window.clearTimeout(timer);
+        window.clearTimeout(markShownTimer);
       };
     }
   }, [active]);
@@ -557,8 +569,9 @@ ${images.map((img) => `  { src: "${img.src}", left: ${img.left}, top: ${img.top}
               key={`h-${i}`}
               line={line}
               drawn={sceneVisible || editMode}
-              delay={hasBeenShownRef.current ? 0 : i * 0.06}
+              delay={i * 0.06}
               editMode={editMode}
+              instant={hasBeenShownRef.current}
               onDrag={(pos) => {
                 setHLines((prev) => {
                   const next = [...prev];
@@ -578,8 +591,9 @@ ${images.map((img) => `  { src: "${img.src}", left: ${img.left}, top: ${img.top}
               key={`v-${i}`}
               line={line}
               drawn={sceneVisible || editMode}
-              delay={hasBeenShownRef.current ? 0 : 0.05 + i * 0.05}
+              delay={0.05 + i * 0.05}
               editMode={editMode}
+              instant={hasBeenShownRef.current}
               onDrag={(pos) => {
                 setVLines((prev) => {
                   const next = [...prev];
@@ -607,7 +621,8 @@ ${images.map((img) => `  { src: "${img.src}", left: ${img.left}, top: ${img.top}
                 index={sortedIndex}
                 editMode={editMode}
                 revealed={sceneVisible || editMode}
-                skipDelay={hasBeenShownRef.current}
+                instant={hasBeenShownRef.current}
+                disableInteraction={!active}
                 onUpdate={(left, top, width, height) => {
                   setImages((prev) => {
                     const next = [...prev];
