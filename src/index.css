@@ -178,8 +178,18 @@ body {
 }
 
 .refresh-button-reveal {
+  left: calc(338 / 350 * 100%);
+  top: calc(160 / 265.01 * 100%);
   opacity: 0;
   animation: refresh-button-drop-in 0.6s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+}
+
+/* Sit below the F of FEED on mobile instead of beside the D */
+@media (max-width: 768px) {
+  .refresh-button-reveal {
+    left: calc(10 / 350 * 100%);
+    top: 100%;
+  }
 }
 
 @keyframes refresh-button-drop-in {
@@ -259,6 +269,34 @@ body {
 
 .production-image.production-image-instant {
   transition: none;
+}
+
+/* Mobile adjustments for production scene */
+@media (max-width: 768px) {
+  /* Shift the first visible vertical line (50% center line) to the right */
+  .production-grid > div:nth-child(7) {
+    transform: translateX(10vw);
+  }
+  
+  /* Hide the second visible vertical line (72.2% line) on mobile */
+  .production-grid > div:nth-child(8) {
+    display: none;
+  }
+  
+  /* Shift the echocardiogram image to the right */
+  [data-article-id="echocardiogram"] {
+    transform: translateX(-5vw) !important;
+    width: 40vw !important;
+
+  }
+  
+  /* Increase width of the fried-egg/Wikipedia images on mobile */
+  [data-article-id="fried-egg"] {
+    width: 25vw !important;
+    max-width: 400px !important;
+    transform: translateX(10vw) !important;
+
+  }
 }
 
 .collage-fade-out {

@@ -101,8 +101,6 @@ export function ConsumptionTitle({
         <span
           className="refresh-button-reveal absolute flex items-center justify-center"
           style={{
-            left: pctX(338),
-            top: pctY(160),
             transform: `rotate(${8.78 * (1 - straighten)}deg)`,
             animationDelay: `${(consumptionTitleLetters.length - 1) * TITLE_LETTER_STAGGER_S}s`,
             "--start-rotation": "45deg",
