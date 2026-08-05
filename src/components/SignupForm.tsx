@@ -42,14 +42,14 @@ export function SignupForm() {
 
   return (
     <div className="mb-10">
-      <div className="flex w-full flex-col gap-6 min-[480px]:flex-row min-[480px]:items-stretch">
+      <div className="flex w-full flex-row items-stretch gap-2 min-[480px]:gap-6">
         <a
           href="https://shop.kernelmag.io/products/kernel-magazine-issue-6"
           target="_blank"
           rel="noopener noreferrer"
           className="shrink-0 border border-black border-solid bg-white px-2 py-1.5 text-center text-[16px] leading-[28px] text-black transition-opacity hover:opacity-90"
         >
-          Purchase issue ↗
+          Purchase issue<span className="max-[767px]:hidden"> ↗</span>
         </a>
         <form
           className="flex min-w-0 flex-1 items-stretch border border-white border-solid bg-white"

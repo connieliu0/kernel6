@@ -117,11 +117,11 @@ export function ConsumptionBodyText({
     <div ref={trackRef} className="pointer-events-none relative z-30" aria-hidden={false}>
       <article
         ref={cardRef}
-        className="consumption-body-text pointer-events-none fixed left-1/2 w-[500px] max-w-[calc(100%-2.5rem)] bg-black/90 px-8 pt-8 pb-10 text-[16px] leading-[1.6] text-white"
+        className="consumption-body-text pointer-events-none fixed left-1/2 w-full max-w-none bg-black/90 px-8 pt-8 pb-10 text-[16px] leading-[1.6] text-white min-[769px]:w-[500px] min-[769px]:max-w-[calc(100%-2.5rem)]"
         style={{ top: "100vh", opacity: 0, willChange: "top, opacity, transform" }}
       >
         <div ref={signupRef}>
-          <div className="mb-4 w-[70%] max-[768px]:block min-[769px]:hidden">
+          <div className="mb-8 w-[70%] max-[768px]:block min-[769px]:hidden">
             <ConsumptionSubtitle variant="inline" straighten={straighten} />
           </div>
           <SignupForm />
